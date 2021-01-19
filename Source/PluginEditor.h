@@ -30,19 +30,19 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    ScopedPointer<Slider> attackKnob;
-    ScopedPointer<Slider> releaseKnob;
-    ScopedPointer<Slider> ratioKnob;
-    ScopedPointer<Slider> thresholdKnob;
-    ScopedPointer<Slider> gainKnob;
+    std::unique_ptr<Slider> attackKnob;
+    std::unique_ptr<Slider> releaseKnob;
+    std::unique_ptr<Slider> ratioKnob;
+    std::unique_ptr<Slider> thresholdKnob;
+    std::unique_ptr<Slider> gainKnob;
     ScopedPointer<TextButton> onOffBtn;
     
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> ratioAttachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
-    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
- //   ScopedPointer<AudioProcessorValueTreeState::ButtonAttachment> onOffBtnAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ratioAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+ //   std::unique_ptr<AudioProcessorValueTreeState::ButtonAttachment> onOffBtnAttachment;
 
     CompressorAudioProcessor& audioProcessor;
     void buttonClicked(Button* buttonThatWasClicked) override;

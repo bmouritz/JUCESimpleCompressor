@@ -16,34 +16,31 @@
 CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    addAndMakeVisible(attackKnob = new Slider("Attack"));
+    addAndMakeVisible(*(attackKnob = std::make_unique<Slider>("Attack")));
     attackKnob->setSliderStyle(Slider::Rotary);
     attackKnob->setTextBoxStyle(Slider::NoTextBox, true, 100, 100);
-    attackKnob->setTextValueSuffix(" Seconds");
+    attackKnob->setTextValueSuffix(" Milliseconds");
     attackKnob->setPopupDisplayEnabled(true, false, this);
 
-
-    addAndMakeVisible(releaseKnob = new Slider("Release"));
+    addAndMakeVisible(*(releaseKnob = std::make_unique<Slider>("Release")));
     releaseKnob->setSliderStyle(Slider::Rotary);
     releaseKnob->setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
-    releaseKnob->setTextValueSuffix(" Seconds");
+    releaseKnob->setTextValueSuffix(" Milliseconds");
     releaseKnob->setPopupDisplayEnabled(true, false, this);
 
-
-    addAndMakeVisible(ratioKnob = new Slider("Ratio"));
+    addAndMakeVisible(*(ratioKnob = std::make_unique<Slider>("Ratio")));
     ratioKnob->setSliderStyle(Slider::Rotary);
     ratioKnob->setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
     ratioKnob->setTextValueSuffix(":1");
     ratioKnob->setPopupDisplayEnabled(true, false, this);
 
-
-    addAndMakeVisible(thresholdKnob = new Slider("Volume"));
+    addAndMakeVisible(*(thresholdKnob = std::make_unique<Slider>("Volume")));
     thresholdKnob->setSliderStyle(Slider::Rotary);
     thresholdKnob->setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
     thresholdKnob->setTextValueSuffix(" dB");
     thresholdKnob->setPopupDisplayEnabled(true, false, this);
 
-    addAndMakeVisible(gainKnob = new Slider("Gain"));
+    addAndMakeVisible(*(gainKnob = std::make_unique<Slider>("Gain")));
     gainKnob->setSliderStyle(Slider::Rotary);
     gainKnob->setTextBoxStyle(Slider::NoTextBox, false, 100, 100);
     gainKnob->setTextValueSuffix(" dB");
@@ -54,11 +51,11 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
     onOffBtn->addListener(this);
     onOffBtn->setClickingTogglesState(true);
 
-    attackAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "attack", *attackKnob);
-    releaseAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "release", *releaseKnob);
-    ratioAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "ratio", *ratioKnob);
-    thresholdAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "threshold", *thresholdKnob);
-    gainAttachment = new AudioProcessorValueTreeState::SliderAttachment(p.getState(), "gain", *gainKnob);
+    attackAttachment = std::make_unique <AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "attack", *attackKnob);
+    releaseAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "release", *releaseKnob);
+    ratioAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "ratio", *ratioKnob);
+    thresholdAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "threshold", *thresholdKnob);
+    gainAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "gain", *gainKnob);
 //    onOffBtnAttachment = new AudioProcessorValueTreeState::ButtonAttachment(p.getState(), "On Off Btn", *onOffBtn);
 
     setSize (600, 200);
