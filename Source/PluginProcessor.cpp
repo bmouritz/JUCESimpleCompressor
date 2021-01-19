@@ -27,9 +27,9 @@ CompressorAudioProcessor::CompressorAudioProcessor()
 {
     state = new AudioProcessorValueTreeState(*this, nullptr);
 
-    state->createAndAddParameter("attack", "Attack", "Attack", NormalisableRange<float>(0.0f, 0.2f, 0.005f), 0.0f, nullptr, nullptr);
-    state->createAndAddParameter("release", "Release", "Release", NormalisableRange<float>(0.0f, 5.0f, 0.05f), 1.0f, nullptr, nullptr);
-    state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(1.0f, 30.0f, 3.0f), 2.0f, nullptr, nullptr);
+    state->createAndAddParameter("attack", "Attack", "Attack", NormalisableRange<float>(0.0f, 20.0f, 0.1f), 0.0f, nullptr, nullptr);
+    state->createAndAddParameter("release", "Release", "Release", NormalisableRange<float>(0.0f, 200.0f, 0.1f), 0.0f, nullptr, nullptr);
+    state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(1.0f, 30.0f, 3.0f), 1.0f, nullptr, nullptr);
     state->createAndAddParameter("threshold", "Threshold", "Threshold", NormalisableRange<float>(-50.0, 0.0f, 1.0f), -40.0f, nullptr, nullptr);
     state->createAndAddParameter("gain", "Gain", "Gain", NormalisableRange<float>(-15.0f, 40.0f, 5.0f), 0.0f, nullptr, nullptr);
 
@@ -47,8 +47,6 @@ CompressorAudioProcessor::CompressorAudioProcessor()
     compressor.setRatio(1);
     compressor.setRelease(5.0f);
     compressor.setThreshold(-40.0f);
-
-
 }
 
 CompressorAudioProcessor::~CompressorAudioProcessor()
