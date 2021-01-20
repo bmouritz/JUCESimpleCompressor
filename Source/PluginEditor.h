@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Button::Listener
+class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     CompressorAudioProcessorEditor (CompressorAudioProcessor&);
@@ -35,7 +35,7 @@ private:
     std::unique_ptr<Slider> ratioKnob;
     std::unique_ptr<Slider> thresholdKnob;
     std::unique_ptr<Slider> gainKnob;
-    ScopedPointer<TextButton> onOffBtn;
+//    std::unique_ptr<TextButton> onOffBtn;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
@@ -45,7 +45,6 @@ private:
  //   std::unique_ptr<AudioProcessorValueTreeState::ButtonAttachment> onOffBtnAttachment;
 
     CompressorAudioProcessor& audioProcessor;
-    void buttonClicked(Button* buttonThatWasClicked) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessorEditor)
 };

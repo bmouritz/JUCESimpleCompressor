@@ -46,17 +46,16 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
     gainKnob->setTextValueSuffix(" dB");
     gainKnob->setPopupDisplayEnabled(true, false, this);
 
-    addAndMakeVisible(onOffBtn = new TextButton("On Off Button"));
-    onOffBtn->setButtonText("ON");
-    onOffBtn->addListener(this);
-    onOffBtn->setClickingTogglesState(true);
+   // addAndMakeVisible(*(onOffBtn = std::make_unique<TextButton>("onOffBtn")));
+  //  onOffBtn->setClickingTogglesState(true);
+ //   onOffBtn->onClick = [this]() {};
 
     attackAttachment = std::make_unique <AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "attack", *attackKnob);
     releaseAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "release", *releaseKnob);
     ratioAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "ratio", *ratioKnob);
     thresholdAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "threshold", *thresholdKnob);
     gainAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "gain", *gainKnob);
-//    onOffBtnAttachment = new AudioProcessorValueTreeState::ButtonAttachment(p.getState(), "On Off Btn", *onOffBtn);
+//    onOffBtnAttachment = std::make_unique < AudioProcessorValueTreeState::ButtonAttachment>(p.getState(), "OnOffBtn", onOffBtn);
 
     setSize (600, 200);
 }
@@ -64,20 +63,6 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
 CompressorAudioProcessorEditor::~CompressorAudioProcessorEditor()
 {
 }
-
-void CompressorAudioProcessorEditor::buttonClicked(Button* buttonThatWasClicked)
-{
-    if (buttonThatWasClicked == onOffBtn && buttonThatWasClicked->getClickingTogglesState() == true)
-    {
-        onOffBtn->setButtonText("OFF");
-        onOffBtn->setClickingTogglesState(false);
-    }
-    else {
-        onOffBtn->setButtonText("ON");
-        onOffBtn->setClickingTogglesState(true);
-    }
-}
-
 
 //==============================================================================
 void CompressorAudioProcessorEditor::paint (juce::Graphics& g)
@@ -101,5 +86,5 @@ void CompressorAudioProcessorEditor::resized()
     releaseKnob->setBounds(((getWidth() / 6) * 3) - (100 / 2), ((getHeight() / 2) - (100 / 2)), 100, 100);
     ratioKnob->setBounds(((getWidth() / 6) * 4) - (100 / 2), ((getHeight() / 2) - (100 / 2)), 100, 100);
     thresholdKnob->setBounds(((getWidth() / 6) * 5) - (100 / 2), ((getHeight() / 2) - (100 / 2)), 100, 100);
-  //  onOffBtn->setBounds(((getWidth() / 2)) - (50/ 2), ((getHeight() / 5) * 2.5) - (100 / 2) + 100, 50, 25);
+  //  onOffBtn->setBounds(((getWidth() / 2)) - (50/ 2), ((getHeight() / 5) * 2.5) - (100 / 2) + 100, 100, 25);
 }

@@ -65,6 +65,7 @@ private:
     ScopedPointer<AudioProcessorValueTreeState> state;
     dsp::Compressor<float> compressor;
     dsp::Gain<float> inputGain;
+    std::unique_ptr<dsp::Oversampling<float>> oversampling;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessor)

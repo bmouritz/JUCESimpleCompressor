@@ -32,12 +32,15 @@ CompressorAudioProcessor::CompressorAudioProcessor()
     state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(1.0f, 30.0f, 3.0f), 1.0f, nullptr, nullptr);
     state->createAndAddParameter("threshold", "Threshold", "Threshold", NormalisableRange<float>(-50.0, 0.0f, 1.0f), -40.0f, nullptr, nullptr);
     state->createAndAddParameter("gain", "Gain", "Gain", NormalisableRange<float>(-15.0f, 40.0f, 5.0f), 0.0f, nullptr, nullptr);
+    NormalisableRange<float> rngZeroToOne(0.0f, 1.0f, 0.0001f);
+    state->createAndAddParameter("onOffBtn", "OnOffBtn", "OnOffBtn", rngZeroToOne, rngZeroToOne.snapToLegalValue(0.0f), nullptr, nullptr);
 
     state->state = ValueTree("attack");
     state->state = ValueTree("release");
     state->state = ValueTree("ratio");
     state->state = ValueTree("threshold");
     state->state = ValueTree("gain");
+    state->state = ValueTree("onOffBtn");
 
     dsp::Gain<float> inputGain;
     inputGain.setGainDecibels(0);
@@ -123,9 +126,16 @@ void CompressorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = getTotalNumOutputChannels();
+    spec.numChannels = getNumOutputChannels();
+
+    compressor.reset();
     compressor.prepare(spec);
+    
+    inputGain.reset();
     inputGain.prepare(spec);
+
+    oversampling.reset(new dsp::Oversampling<float>(getNumOutputChannels(), 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple, false));
+    oversampling->initProcessing(static_cast<size_t> (samplesPerBlock));
 }
 
 void CompressorAudioProcessor::releaseResources()
@@ -175,6 +185,7 @@ void CompressorAudioProcessor::updateParameters() {
 
 void CompressorAudioProcessor::process(dsp::ProcessContextReplacing<float> context) {
     //do processing here and output
+    oversampling->processSamplesUp(context.getOutputBlock());
     compressor.process(context);
     inputGain.process(context);
     updateParameters();
