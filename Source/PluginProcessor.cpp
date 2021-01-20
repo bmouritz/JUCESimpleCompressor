@@ -32,15 +32,12 @@ CompressorAudioProcessor::CompressorAudioProcessor()
     state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(1.0f, 30.0f, 3.0f), 1.0f, nullptr, nullptr);
     state->createAndAddParameter("threshold", "Threshold", "Threshold", NormalisableRange<float>(-50.0, 0.0f, 1.0f), -40.0f, nullptr, nullptr);
     state->createAndAddParameter("gain", "Gain", "Gain", NormalisableRange<float>(-15.0f, 40.0f, 5.0f), 0.0f, nullptr, nullptr);
-    NormalisableRange<float> rngZeroToOne(0.0f, 1.0f, 0.0001f);
-    state->createAndAddParameter("onOffBtn", "OnOffBtn", "OnOffBtn", rngZeroToOne, rngZeroToOne.snapToLegalValue(0.0f), nullptr, nullptr);
 
     state->state = ValueTree("attack");
     state->state = ValueTree("release");
     state->state = ValueTree("ratio");
     state->state = ValueTree("threshold");
     state->state = ValueTree("gain");
-    state->state = ValueTree("onOffBtn");
 
     dsp::Gain<float> inputGain;
     inputGain.setGainDecibels(0);
@@ -123,9 +120,10 @@ void CompressorAudioProcessor::changeProgramName (int index, const juce::String&
 void CompressorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     dsp::ProcessSpec spec;
+ //   int osFactor = static_cast<int>(oversampling->getOversamplingFactor());
 
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = samplesPerBlock;
+    spec.sampleRate = sampleRate * 2;
+    spec.maximumBlockSize = samplesPerBlock * 2;
     spec.numChannels = getNumOutputChannels();
 
     compressor.reset();
@@ -169,7 +167,6 @@ bool CompressorAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 #endif
 
 void CompressorAudioProcessor::updateParameters() {
-    //update your parameters for your processes
     float attack = *state->getRawParameterValue("attack");
     float release = *state->getRawParameterValue("release");
     float ratio = *state->getRawParameterValue("ratio");
@@ -185,10 +182,9 @@ void CompressorAudioProcessor::updateParameters() {
 
 void CompressorAudioProcessor::process(dsp::ProcessContextReplacing<float> context) {
     //do processing here and output
-    oversampling->processSamplesUp(context.getOutputBlock());
+    updateParameters();
     compressor.process(context);
     inputGain.process(context);
-    updateParameters();
 }
 
 void CompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -197,17 +193,22 @@ void CompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    // If OS button selected then OS, else only run effects without OS
     dsp::AudioBlock<float> block(buffer);
-    process(dsp::ProcessContextReplacing<float>(block));
+    if (filteringEnabled) {
+        // create new block of upsampled buffer
+        dsp::AudioBlock<float> osBlock = oversampling->processSamplesUp(block);
+        // send upsampled block to process to effect
+        process(dsp::ProcessContextReplacing<float>(osBlock));
+        // process the original block back down
+        oversampling->processSamplesDown(block);
+    }
+    else {
+        process(dsp::ProcessContextReplacing<float>(block));
+    }
 }
 
 AudioProcessorValueTreeState& CompressorAudioProcessor::getState() {

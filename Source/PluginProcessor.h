@@ -26,6 +26,11 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
+    void setFilteringEnbaled(const bool shouldBeEnabled)
+    {
+        filteringEnabled = shouldBeEnabled;
+    }
+
    #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
@@ -62,10 +67,13 @@ public:
     void updateParameters();
 
 private:
-    ScopedPointer<AudioProcessorValueTreeState> state;
+    bool filteringEnabled;
+
     dsp::Compressor<float> compressor;
     dsp::Gain<float> inputGain;
     std::unique_ptr<dsp::Oversampling<float>> oversampling;
+
+    ScopedPointer<AudioProcessorValueTreeState> state;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessor)

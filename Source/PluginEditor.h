@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor
+class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor, private Button::Listener
 {
 public:
     CompressorAudioProcessorEditor (CompressorAudioProcessor&);
@@ -35,14 +35,17 @@ private:
     std::unique_ptr<Slider> ratioKnob;
     std::unique_ptr<Slider> thresholdKnob;
     std::unique_ptr<Slider> gainKnob;
-//    std::unique_ptr<TextButton> onOffBtn;
+
+    TextButton On;
+    TextButton Off;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ratioAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
- //   std::unique_ptr<AudioProcessorValueTreeState::ButtonAttachment> onOffBtnAttachment;
+
+    void buttonClicked(Button* buttonThatWasClicked) override;
 
     CompressorAudioProcessor& audioProcessor;
 
