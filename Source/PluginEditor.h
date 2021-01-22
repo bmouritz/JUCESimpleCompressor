@@ -11,8 +11,10 @@
 
 #pragma once
 
+#include "myLookAndFeel.h"
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+
 
 //==============================================================================
 /**
@@ -35,9 +37,8 @@ private:
     std::unique_ptr<Slider> ratioKnob;
     std::unique_ptr<Slider> thresholdKnob;
     std::unique_ptr<Slider> gainKnob;
-
     TextButton On;
-    TextButton Off;
+    myLookAndFeelV1 myLookAndFeelV1;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;

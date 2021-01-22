@@ -67,7 +67,7 @@ public:
     void updateParameters();
 
 private:
-    bool filteringEnabled;
+    bool filteringEnabled = false;
 
     dsp::Compressor<float> compressor;
     dsp::Gain<float> inputGain;

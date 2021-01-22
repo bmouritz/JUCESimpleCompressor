@@ -198,7 +198,7 @@ void CompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 
     // If OS button selected then OS, else only run effects without OS
     dsp::AudioBlock<float> block(buffer);
-    if (filteringEnabled) {
+    if (!filteringEnabled) {
         // create new block of upsampled buffer
         dsp::AudioBlock<float> osBlock = oversampling->processSamplesUp(block);
         // send upsampled block to process to effect
