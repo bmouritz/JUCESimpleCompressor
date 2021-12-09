@@ -70,8 +70,15 @@ private:
     bool filteringEnabled = false;
 
     dsp::Compressor<float> compressor;
-    dsp::Gain<float> inputGain;
-    std::unique_ptr<dsp::Oversampling<float>> oversampling;
+
+    // setKnee in compressor class by /2 to be +- threshold
+    // 
+    
+    // if DB > threshold + KneeWidth / 2 => compress
+    // if DB > threshold - KneeWidth / 2 => (1/Ratio - 1) * (compression + KneeWidth /2)^2 / 2*KneeWidth 
+    // else no compression
+
+
 
     ScopedPointer<AudioProcessorValueTreeState> state;
 

@@ -27,23 +27,20 @@ CompressorAudioProcessor::CompressorAudioProcessor()
 {
     state = new AudioProcessorValueTreeState(*this, nullptr);
 
-    state->createAndAddParameter("attack", "Attack", "Attack", NormalisableRange<float>(0.0f, 20.0f, 0.1f), 0.0f, nullptr, nullptr);
-    state->createAndAddParameter("release", "Release", "Release", NormalisableRange<float>(0.0f, 200.0f, 0.1f), 0.0f, nullptr, nullptr);
-    state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(1.0f, 30.0f, 3.0f), 1.0f, nullptr, nullptr);
-    state->createAndAddParameter("threshold", "Threshold", "Threshold", NormalisableRange<float>(-50.0, 0.0f, 1.0f), -40.0f, nullptr, nullptr);
-    state->createAndAddParameter("gain", "Gain", "Gain", NormalisableRange<float>(-15.0f, 40.0f, 5.0f), 0.0f, nullptr, nullptr);
+    state->createAndAddParameter("attack", "Attack", "Attack", NormalisableRange<float>(1.0f, 50.0f, 1.0f), 10.0f, nullptr, nullptr);
+    state->createAndAddParameter("release", "Release", "Release", NormalisableRange<float>(40.0f, 120.0f, 5.0f), 80.0f, nullptr, nullptr);
+    state->createAndAddParameter("ratio", "Ratio", "Ratio", NormalisableRange<float>(2.0f, 10.0f, 1.0f), 3.0f, nullptr, nullptr);
+    state->createAndAddParameter("threshold", "Threshold", "Threshold", NormalisableRange<float>(-60.0, 0.0f, 0.1f), 0.0f, nullptr, nullptr);
+    state->createAndAddParameter("knee", "Knee", "Knee", NormalisableRange<float>(-20.0, 0.0f, 1.0f), -6.0f, nullptr, nullptr);
 
     state->state = ValueTree("attack");
     state->state = ValueTree("release");
     state->state = ValueTree("ratio");
     state->state = ValueTree("threshold");
-    state->state = ValueTree("gain");
-
-    dsp::Gain<float> inputGain;
-    inputGain.setGainDecibels(0);
+    state->state = ValueTree("knee");
     
     dsp::Compressor<float> compressor;
-    compressor.setAttack(1.0f);
+    compressor.setAttack(10.0f);
     compressor.setRatio(1);
     compressor.setRelease(5.0f);
     compressor.setThreshold(-40.0f);
@@ -122,18 +119,12 @@ void CompressorAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     dsp::ProcessSpec spec;
  //   int osFactor = static_cast<int>(oversampling->getOversamplingFactor());
 
-    spec.sampleRate = sampleRate * 2;
-    spec.maximumBlockSize = samplesPerBlock * 2;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getNumOutputChannels();
 
     compressor.reset();
     compressor.prepare(spec);
-    
-    inputGain.reset();
-    inputGain.prepare(spec);
-
-    oversampling.reset(new dsp::Oversampling<float>(getNumOutputChannels(), 2, dsp::Oversampling<float>::filterHalfBandFIREquiripple, false));
-    oversampling->initProcessing(static_cast<size_t> (samplesPerBlock));
 }
 
 void CompressorAudioProcessor::releaseResources()
@@ -171,9 +162,8 @@ void CompressorAudioProcessor::updateParameters() {
     float release = *state->getRawParameterValue("release");
     float ratio = *state->getRawParameterValue("ratio");
     float threshold = *state->getRawParameterValue("threshold");
-    float gain = *state->getRawParameterValue("gain");
+    float knee = *state->getRawParameterValue("knee");
 
-    inputGain.setGainDecibels(gain);
     compressor.setAttack(attack);
     compressor.setRatio(ratio);
     compressor.setRelease(release);
@@ -184,7 +174,6 @@ void CompressorAudioProcessor::process(dsp::ProcessContextReplacing<float> conte
     //do processing here and output
     updateParameters();
     compressor.process(context);
-    inputGain.process(context);
 }
 
 void CompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -196,19 +185,9 @@ void CompressorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // If OS button selected then OS, else only run effects without OS
+
     dsp::AudioBlock<float> block(buffer);
-    if (!filteringEnabled) {
-        // create new block of upsampled buffer
-        dsp::AudioBlock<float> osBlock = oversampling->processSamplesUp(block);
-        // send upsampled block to process to effect
-        process(dsp::ProcessContextReplacing<float>(osBlock));
-        // process the original block back down
-        oversampling->processSamplesDown(block);
-    }
-    else {
-        process(dsp::ProcessContextReplacing<float>(block));
-    }
+    process(dsp::ProcessContextReplacing<float>(block));
 }
 
 AudioProcessorValueTreeState& CompressorAudioProcessor::getState() {

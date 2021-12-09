@@ -19,7 +19,7 @@
 //==============================================================================
 /**
 */
-class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor, private Button::Listener
+class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     CompressorAudioProcessorEditor (CompressorAudioProcessor&);
@@ -36,19 +36,18 @@ private:
     std::unique_ptr<Slider> releaseKnob;
     std::unique_ptr<Slider> ratioKnob;
     std::unique_ptr<Slider> thresholdKnob;
-    std::unique_ptr<Slider> gainKnob;
-    TextButton On;
+    std::unique_ptr<Slider> kneeKnob;
     myLookAndFeelV1 myLookAndFeelV1;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ratioAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-
-    void buttonClicked(Button* buttonThatWasClicked) override;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> kneeAttachment;
 
     CompressorAudioProcessor& audioProcessor;
+
+    OpenGLContext openGLContext;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessorEditor)
 };
