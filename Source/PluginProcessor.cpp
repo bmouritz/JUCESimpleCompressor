@@ -168,6 +168,7 @@ void CompressorAudioProcessor::updateParameters() {
     compressor.setRatio(ratio);
     compressor.setRelease(release);
     compressor.setThreshold(threshold);
+    compressor.setKneeWidth(knee);
 }
 
 void CompressorAudioProcessor::process(dsp::ProcessContextReplacing<float> context) {
