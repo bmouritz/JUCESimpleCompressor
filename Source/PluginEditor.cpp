@@ -54,6 +54,11 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
     kneeKnob->setTextValueSuffix(" dB");
     kneeKnob->setPopupDisplayEnabled(true, false, this);
 
+    addAndMakeVisible(On);
+    On.setButtonText(" Dual Mono ");
+    On.setClickingTogglesState("true");
+    On.addListener(this);
+
     attackAttachment = std::make_unique <AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "attack", *attackKnob);
     releaseAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "release", *releaseKnob);
     ratioAttachment = std::make_unique < AudioProcessorValueTreeState::SliderAttachment>(p.getState(), "ratio", *ratioKnob);
@@ -70,6 +75,19 @@ CompressorAudioProcessorEditor::~CompressorAudioProcessorEditor()
     thresholdKnob->setLookAndFeel(nullptr);
     kneeKnob->setLookAndFeel(nullptr);
     ratioKnob->setLookAndFeel(nullptr);
+}
+
+void CompressorAudioProcessorEditor::buttonClicked(Button* buttonThatWasClicked)
+{
+    if (buttonThatWasClicked == &On) {
+        audioProcessor.setFilteringEnbaled(On.getToggleState());
+        if (On.getToggleState()) {
+            On.setButtonText(" Stereo ");
+        }
+        else {
+            On.setButtonText(" Dual Mono ");
+        }
+    }
 }
 
 //==============================================================================
@@ -96,4 +114,6 @@ void CompressorAudioProcessorEditor::resized()
     releaseKnob->setBounds(((getWidth() / 6) * 3) - (100 / 2), ((getHeight() / 2) - (60 / 2)), 100, 100);
     ratioKnob->setBounds(((getWidth() / 6) * 4) - (100 / 2), ((getHeight() / 2) - (60 / 2)), 100, 100);
     thresholdKnob->setBounds(((getWidth() / 6) * 5) - (100 / 2), ((getHeight() / 2) - (60 / 2)), 100, 100);
+
+    On.setBounds((getWidth() / 2) - (100 / 2), 15, 100, 50);
 }

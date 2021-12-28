@@ -28,7 +28,7 @@ public:
 
     void setFilteringEnbaled(const bool shouldBeEnabled)
     {
-        filteringEnabled = shouldBeEnabled;
+        stereo = shouldBeEnabled;
     }
 
    #ifndef JucePlugin_PreferredChannelConfigurations
@@ -64,21 +64,13 @@ public:
     AudioProcessorValueTreeState& getState();
 
     void process(dsp::ProcessContextReplacing<float> context);
+    void processStereo(dsp::ProcessContextReplacing<float> context);
     void updateParameters();
 
 private:
-    bool filteringEnabled = false;
+    bool stereo = false;
 
     dsp::Compressor<float> compressor;
-
-    // setKnee in compressor class by /2 to be +- threshold
-    // 
-    
-    // if DB > threshold + KneeWidth / 2 => compress
-    // if DB > threshold - KneeWidth / 2 => (1/Ratio - 1) * (compression + KneeWidth /2)^2 / 2*KneeWidth 
-    // else no compression
-
-
 
     ScopedPointer<AudioProcessorValueTreeState> state;
 

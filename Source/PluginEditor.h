@@ -19,7 +19,7 @@
 //==============================================================================
 /**
 */
-class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor
+class CompressorAudioProcessorEditor  : public juce::AudioProcessorEditor, private Button::Listener
 {
 public:
     CompressorAudioProcessorEditor (CompressorAudioProcessor&);
@@ -38,6 +38,7 @@ private:
     std::unique_ptr<Slider> thresholdKnob;
     std::unique_ptr<Slider> kneeKnob;
     myLookAndFeelV1 myLookAndFeelV1;
+    TextButton On;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
@@ -48,6 +49,8 @@ private:
     CompressorAudioProcessor& audioProcessor;
 
     OpenGLContext openGLContext;
+
+    void buttonClicked(Button* buttonThatWasClicked) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessorEditor)
 };
