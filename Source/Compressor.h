@@ -96,7 +96,6 @@ public:
     /** Performs the processing operation on a single sample at a time. */
     SampleType processSample (int channel, SampleType inputValue);
 
-    // process both left and right.
     template <typename ProcessContext>
     void processStereo(const ProcessContext& context) noexcept
     {
@@ -109,33 +108,10 @@ public:
         jassert(inputBlock.getNumSamples() == numSamples);
 
         if (context.isBypassed)
-        {
+        {        
             outputBlock.copyFrom(inputBlock);
             return;
-        }
-
-        // process left channel
-        Array<float> leftGain;
-        auto* inputSamplesLeft = inputBlock.getChannelPointer(0);
-        // get array of gain
-        for (size_t i = 0; i < numSamples; ++i) {
-            leftGain.add(juce::Decibels::gainToDecibels(processSample(0, inputSamplesLeft[i])));
-        }
-
-        // process right channel
-        Array<float> rightGain;
-        auto* inputSamplesRight = inputBlock.getChannelPointer(1);
-        // get array of gain
-        for (size_t i = 0; i < numSamples; ++i) {
-            rightGain.add(juce::Decibels::gainToDecibels(processSample(1, inputSamplesRight[i])));
-        }
-
-        Array<float> maxGain;
-        // get [max(leftgain, rightgain)]
-        for (size_t i = 0; i < numSamples; ++i) {
-            maxGain.add(std::max(leftGain[i], rightGain[i]));
-        }
-        
+        }        
 
         // process samples with gain amount
         for (size_t channel = 0; channel < numChannels; ++channel)
@@ -144,13 +120,15 @@ public:
             auto* outputSamples = outputBlock.getChannelPointer(channel);
 
             for (size_t i = 0; i < numSamples; ++i) {
-                outputSamples[i] = processSampleStereo((int)channel, inputSamples[i], maxGain[i]);
+                float x_max = jmax(std::abs(inputBlock.getSample(0, i)), std::abs(inputBlock.getSample(1, i)));
+                float env = envelopeFilter.processSample(channel, x_max);
+                outputSamples[i] = processSampleStereo(env);
             }
         }
     }
 
     /** Performs the processing operation on a single sample at a time. */
-    SampleType processSampleStereo(int channel, SampleType inputValue, float maxGain);
+    SampleType processSampleStereo(float env);
 
 private:
     //==============================================================================

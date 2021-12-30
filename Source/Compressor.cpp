@@ -120,11 +120,8 @@ SampleType Compressor<SampleType>::processSample(int channel, SampleType inputVa
 }
 
 template <typename SampleType>
-SampleType Compressor<SampleType>::processSampleStereo(int channel, SampleType inputValue, float maxGain)
+SampleType Compressor<SampleType>::processSampleStereo(float env)
 {
-    // Ballistics filter with peak rectifier
-    auto env = envelopeFilter.processSample(channel, inputValue);
-
     float x_db = juce::Decibels::gainToDecibels(env);
 
     if (x_db > (thresholddB + kneeWidth / 2)) {
@@ -138,10 +135,6 @@ SampleType Compressor<SampleType>::processSampleStereo(int channel, SampleType i
     else {
         // Do not compress
         g_sc = x_db;
-    }
-
-    if (maxGain > g_sc) {
-        g_sc = maxGain;
     }
 
     return  std::pow(10, g_sc * 0.05);
