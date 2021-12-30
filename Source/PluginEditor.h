@@ -15,6 +15,10 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+struct CustomRotarySlider : Slider {
+    CustomRotarySlider() : Slider(Slider::SliderStyle::RotaryHorizontalVerticalDrag, Slider::TextEntryBoxPosition::NoTextBox) {}
+};
+
 
 //==============================================================================
 /**
@@ -32,23 +36,19 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    std::unique_ptr<Slider> attackKnob;
-    std::unique_ptr<Slider> releaseKnob;
-    std::unique_ptr<Slider> ratioKnob;
-    std::unique_ptr<Slider> thresholdKnob;
-    std::unique_ptr<Slider> gainKnob;
-    TextButton On;
+    CompressorAudioProcessor& audioProcessor;
+    OpenGLContext openGLContext;
+
+    using APVTS = AudioProcessorValueTreeState;
+    using Attachment = APVTS::SliderAttachment;
+
+    Attachment attackAttachment, releaseAttachment, ratioAttachment, thresholdAttachment, kneeAttachment;
+    CustomRotarySlider attackSlider, releaseSlider, ratioSlider, thresholdSlider, kneeSlider;
     myLookAndFeelV1 myLookAndFeelV1;
-    
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attackAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> releaseAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> ratioAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> thresholdAttachment;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+    TextButton StereoBtn;
 
     void buttonClicked(Button* buttonThatWasClicked) override;
-
-    CompressorAudioProcessor& audioProcessor;
+    void addVisual();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessorEditor)
 };
