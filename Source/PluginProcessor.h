@@ -12,6 +12,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "newCompressor.h"
 
 //==============================================================================
 /**
@@ -28,7 +29,7 @@ public:
 
     void setFilteringEnbaled(const bool shouldBeEnabled)
     {
-        filteringEnabled = shouldBeEnabled;
+        stereo = shouldBeEnabled;
     }
 
    #ifndef JucePlugin_PreferredChannelConfigurations
@@ -61,19 +62,16 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    AudioProcessorValueTreeState& getState();
-
     void process(dsp::ProcessContextReplacing<float> context);
+    void processStereo(dsp::ProcessContextReplacing<float> context);
     void updateParameters();
 
+    static AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
+
 private:
-    bool filteringEnabled = false;
-
-    dsp::Compressor<float> compressor;
-    dsp::Gain<float> inputGain;
-    std::unique_ptr<dsp::Oversampling<float>> oversampling;
-
-    ScopedPointer<AudioProcessorValueTreeState> state;
+    bool stereo = false;
+    newCompressor<float> compressor;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CompressorAudioProcessor)
