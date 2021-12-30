@@ -16,7 +16,7 @@
 #include "PluginProcessor.h"
 
 struct CustomRotarySlider : Slider {
-    CustomRotarySlider() : Slider(Slider::SliderStyle::RotaryHorizontalVerticalDrag, Slider::TextEntryBoxPosition::NoTextBox) {}
+    CustomRotarySlider() : Slider(Slider::SliderStyle::RotaryVerticalDrag, Slider::TextEntryBoxPosition::NoTextBox) {}
 };
 
 
@@ -42,8 +42,8 @@ private:
     using APVTS = AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
 
-    Attachment attackAttachment, releaseAttachment, ratioAttachment, thresholdAttachment, kneeAttachment;
     CustomRotarySlider attackSlider, releaseSlider, ratioSlider, thresholdSlider, kneeSlider;
+    Attachment attackAttachment, releaseAttachment, ratioAttachment, thresholdAttachment, kneeAttachment;
     myLookAndFeelV1 myLookAndFeelV1;
     TextButton StereoBtn;
 
