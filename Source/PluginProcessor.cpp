@@ -146,7 +146,9 @@ void CompressorAudioProcessor::updateParameters() {
 	float ratio = apvts.getRawParameterValue("Ratio")->load();
 	float threshold = apvts.getRawParameterValue("Threshold")->load();
 	float knee = apvts.getRawParameterValue("Knee")->load();
+	bool stereoLoad = apvts.getRawParameterValue("Stereo")->load();
 
+	stereo = stereoLoad;
 	compressor.setAttack(attack);
 	compressor.setRatio(ratio);
 	compressor.setRelease(release);
@@ -196,6 +198,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout CompressorAudioProcessor::cr
 	layout.add(std::make_unique<juce::AudioParameterFloat>("Threshold", "Threshold", NormalisableRange<float>(-60.0, 0.0f, 0.1f), 0.0f));
 	layout.add(std::make_unique<juce::AudioParameterFloat>("Knee", "Knee", NormalisableRange<float>(0.0, 20.0f, 1.0f), 6.0f));
 
+	layout.add(std::make_unique<juce::AudioParameterBool>("Stereo", "Stereo", false));
+
 	return layout;
 }
 
@@ -207,7 +211,7 @@ bool CompressorAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* CompressorAudioProcessor::createEditor()
 {
-	return new CompressorAudioProcessorEditor(*this);
+	return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================

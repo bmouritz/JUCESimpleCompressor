@@ -97,7 +97,11 @@ SampleType newCompressor<SampleType>::processSample(int channel, SampleType inpu
         g_sc = x_db;
     }
 
-    return  std::pow(10, g_sc * 0.05);
+    auto gainAlpha = g_sc - x_db;
+
+    auto linA = std::pow(10,(gainAlpha / 20));
+
+    return linA * inputValue;
 }
 
 template <typename SampleType>
@@ -118,7 +122,11 @@ SampleType newCompressor<SampleType>::processSampleStereo(float env)
         g_sc = x_db;
     }
 
-    return  std::pow(10, g_sc * 0.05);
+    auto gainAlpha = g_sc - x_db;
+
+    auto linA = std::pow(10, (gainAlpha / 20));
+
+    return linA * inputValue;
 }
 
 template <typename SampleType>
