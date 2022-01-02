@@ -99,13 +99,13 @@ public:
             for (size_t i = 0; i < numSamples; ++i) {
                 float x_max = jmax(std::abs(inputBlock.getSample(0, i)), std::abs(inputBlock.getSample(1, i)));
                 float env = envelopeFilter.processSample(channel, x_max);
-                outputSamples[i] = processSampleStereo(env, x_max);
+                outputSamples[i] = processSampleStereo(env, inputSamples[i]);
             }
         }
     }
 
     /** Performs the processing operation on a single sample at a time. */
-    SampleType processSampleStereo(float env, float x_max);
+    SampleType processSampleStereo(float env, SampleType inputSample);
 
 private:
     //==============================================================================
