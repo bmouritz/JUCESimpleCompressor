@@ -105,7 +105,7 @@ SampleType newCompressor<SampleType>::processSample(int channel, SampleType inpu
 }
 
 template <typename SampleType>
-SampleType newCompressor<SampleType>::processSampleStereo(float env)
+SampleType newCompressor<SampleType>::processSampleStereo(float env, float x_max)
 {
     float x_db = juce::Decibels::gainToDecibels(env);
 
@@ -126,7 +126,7 @@ SampleType newCompressor<SampleType>::processSampleStereo(float env)
 
     auto linA = std::pow(10, (gainAlpha / 20));
 
-    return linA * inputValue;
+    return linA * x_max;
 }
 
 template <typename SampleType>
